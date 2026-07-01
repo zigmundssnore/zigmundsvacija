@@ -208,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = 0;
     let lightboxOpen = false;
     let isZoomed = false;
+    let lbTapTime = 0;
  
     lightboxImage.style.transition = 'opacity 0.15s ease';
  
