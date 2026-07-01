@@ -621,8 +621,8 @@ section {
    nothing gets cropped, items just stack like a gallery wall */
 /* flex masonry — JS sadala bildes pa rindām (lasīšanas secībā) */
 .gallery-container {
-    display: flex;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
     max-width: 1400px;
     margin: 0 auto;
