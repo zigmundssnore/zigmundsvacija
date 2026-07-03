@@ -209,23 +209,6 @@
         </div>
         <input type="file" id="file" accept="image/*" style="display:none">
 
-        <div class="row">
-            <div><label>Izmērs</label><input type="text" id="size" placeholder="60 x 42"></div>
-            <div><label>Cena (€)</label><input type="number" id="price" placeholder="130"></div>
-        </div>
-
-        <label>Tips</label>
-        <input type="text" id="type" list="types" value="Akvarelis uz papīra">
-        <datalist id="types">
-            <option value="Akvarelis uz papīra">
-            <option value="Eļļa uz audekla">
-            <option value="Akrils uz audekla">
-            <option value="Guaša uz papīra">
-        </datalist>
-
-        <label class="check"><input type="checkbox" id="framed"> Ierāmēta glezna <span class="muted">(liek pie “Ierāmētās gleznas”)</span></label>
-        <label class="check"><input type="checkbox" id="isnew" checked> Jauns <span class="muted">(JAUNUMS nozīmīte)</span></label>
-
         <label>Novietojums galerijā</label>
         <select id="placement">
             <option value="first">Pirmā (sākumā)</option>
@@ -374,14 +357,8 @@ function shuffleArr(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
 $('go').addEventListener('click', async () => {
     logEl.innerHTML = '';
     const token = $('token').value.trim();
-    const size = $('size').value.trim();
-    const price = $('price').value.trim();
-    const type = $('type').value.trim();
-    const framed = $('framed').checked;
-    const isnew = $('isnew').checked;
     if (!token) return log('⚠️ Ievadi GitHub token (Iestatījumi).', 'err');
     if (!pickedFile) return log('⚠️ Izvēlies bildi.', 'err');
-    if (!size || !price) return log('⚠️ Aizpildi izmēru un cenu.', 'err');
 
     $('go').disabled = true;
     try {
@@ -396,20 +373,14 @@ $('go').addEventListener('click', async () => {
         await putFile('img/'+id+'.webp', full.b64, 'glezna '+id+' (pilnā)');
         await putFile('img/thumb-'+id+'.webp', thumb.b64, 'glezna '+id+' (sīktēls)');
         await putFile('img/'+id+'.jpg', jpg.b64, 'glezna '+id+' (jpg)');
-        if (framed) await putFile('img/'+id+'nr2.webp', full.b64, 'glezna '+id+' (nr2)');
 
         log('Atjauno galeriju…', 'muted');
         const idx = await getFile('index.html');
         let html = b64ToUtf8(idx.content);
-        const cat = framed ? 'ieramettas' : 'bez-ramja';
         const item =
-'\n<div class="gallery-item" data-category="'+cat+'"'+(isnew?' data-new="true"':'')+'>\n'+
+'\n<div class="gallery-item" data-category="bez-ramja">\n'+
 '<img loading="lazy" decoding="async" alt="Glezna" data-src="img/'+id+'.webp" src="img/thumb-'+id+'.webp"/>\n'+
-'<div class="image-info">\n'+
-'<p class="image-name">'+size+' cm</p>\n'+
-'<p class="image-size">'+price+' €</p>\n'+
-'<p class="image-name" style="font-size:0.8rem; color:rgba(255,255,255,0.45); margin-top:4px;">'+type+'</p>\n'+
-'</div>\n</div>\n';
+'<div class="image-info">\n</div>\n</div>\n';
         const marker = '<div class="gallery-container">';
         const pos = html.indexOf(marker);
         if (pos < 0) throw new Error('Neatrada galerijas sākumu index.html');
@@ -435,7 +406,6 @@ $('go').addEventListener('click', async () => {
         log('(Ja neredzi — atver privātajā cilnē, keša dēļ.)', 'muted');
         // notīra formu nākamajai
         pickedFile = null; preview.style.display='none'; $('dropText').textContent='Ievelc bildi šeit vai klikšķini';
-        $('size').value=''; $('price').value='';
     } catch (e) {
         log('✗ Kļūda: ' + e.message, 'err');
         log('Pārbaudi token un interneta savienojumu.', 'muted');
